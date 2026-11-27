@@ -8,7 +8,7 @@
 // CONFIGURATION
 
 #define N 1024
-#define TILE_SIZE 8
+#define TILE_SIZE 32
 
 // ===================================================================================
 // UTILITIES
