@@ -45,14 +45,24 @@ std::vector<int> transpose_cpu(const std::vector<int>& input, int n) {
     std::vector<int> output{};
     output.resize(input.size());
 
-    //@@ ...
+    for (int i= 0 ; i <  n ; i++){
+        for (int j=0; j < n ; j++){
+            output[i * n + j] = input[j * n + i]; 
+        }
+    }
 
     return output;
 }
 
 //@@ Write the transpose kernel
 __global__ void transpose_gpu(int* input, int* output, int n) {
-    // @@ ...
+    
+    int col = blockIdx.x * blockDim.x + threadIdx.x;
+    int row = blockIdx.y * blockDim.y + threadIdx.y;
+
+    if (row < n && col < n)
+        output[row * n + col] = input [col * n + row];
+
 }
 
 // ===================================================================================

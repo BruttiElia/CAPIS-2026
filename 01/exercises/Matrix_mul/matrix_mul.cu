@@ -39,7 +39,19 @@ void print_matrix(const std::vector<int>& matrix) {
 
 //@@ Implement the naive matrix multiplication
 __global__ void matmul_gpu(int *A, int* B, int *O, int n) {
-    // @@ ...
+    
+    int col = blockIdx.x * blockDim.x + threadIdx.x;
+    int row = blockIdx.y * blockDim.y + threadIdx.y;
+
+    int sum = 0;
+
+    if (row < n && col < n){
+        for ( int k = 0 ; k < n ; k++ )
+            sum += A [(row) * n + k ] *  B [k * n +(col )] ;
+
+        O [row * n + col] = sum ;
+    }
+
 }
 
 // ===================================================================================
@@ -98,7 +110,7 @@ int main(int argc, char** argv) {
     auto timer_gpu = timerGPU{};
     timer_gpu.start();
 
-    matmul_gpu_naive<<<blocks, threads>>>(d_A, d_B, d_O, N);
+    matmul_gpu<<<blocks, threads>>>(d_A, d_B, d_O, N);
 
     timer_gpu.stop();
     cuda_check_error();
@@ -115,9 +127,9 @@ int main(int argc, char** argv) {
     auto cpu_ms = timer_cpu.elapsed_ms();
     auto gpu_ms = timer_gpu.elapsed_ms();
 
-    printf("transpose CPU\n\t%f ms\n", cpu_ms);
+    printf("matmul CPU\n\t%f ms\n", cpu_ms);
 
-    printf("transpose GPU\n\t%f ms (speedup: cpu %.2fx)\n", 
+    printf("matmul GPU\n\t%f ms (speedup: cpu %.2fx)\n", 
         gpu_ms, cpu_ms / gpu_ms);
 
     // ================================================================================================
